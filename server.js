@@ -33,13 +33,16 @@ app.post("/api/notes", (req, res) => {
 })
 app.delete("/api/notes/:id", (req, res) => {
     let deletion = req.params.id;
-    // for (let i = 0; i< notes.length; i++) {
-    //     console.log(notes[i].id)
-    //     if(deletion === notes[i].id){
-    //         return res.json(notes[i]);
-    //     }
-    // }
-    notes.remove(deletion, (err) => {if (err) throw err})
+    for (let i = 0; i< notes.length; i++) {
+        if(deletion === notes[i].id){
+            notes.splice(deletion, 0);
+            fs.writeFile("./db/db.json", `[${notes}]`, "utf-8", (err) => {
+                if (err) throw err;
+                return res.json(req.body);
+            })
+        }
+    }
+    res.json(req.body);
 })
 app.get("*", (req,data) => {
     data.sendFile(path.join(__dirname, "./public/index.html"));
