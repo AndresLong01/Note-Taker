@@ -39,15 +39,23 @@ app.post("/api/notes", (req, res) => {
     })
 })
 // Hopefully deleting stuff :c
+//Yeah, It's ugly and it doesn't make much sense. Let me run you through it Ryan
 app.delete("/api/notes/:id", (req, res) => {
+    //First I assigned the parameter as the ID of my JSON object
     let deletion = req.params.id;
+    //Now, because my notes array is an array of stringified objects, and that sounds like a headache to 
+    //turn into a JSON Object again... I'm just gonna read it from the file it cometh from.
     fs.readFile("./db/db.json", "utf-8", (err, data) => {
         if (err) throw err;
-        let savedNotes = JSON.parse(data);
+        //noteHistory is the data coming in from the parsed JSON file. The collective of notes hath been taketh.
+        let noteHistory = JSON.parse(data);
+        //looping to check for matching ids with the deletion id
         for (let i = 0; i< notes.length; i++) {
-            console.log(deletion, savedNotes[i].id, i)
-            if(deletion == savedNotes[i].id){
+            //If there is a match, which there should always be
+            if(deletion == noteHistory[i].id){
+                //DELETE THAT FOREVER
                 notes.splice(i, 1);
+                //AND remake the database.
                 fs.writeFile("./db/db.json", `[${notes}]`, "utf-8", (err) => {
                     if (err) throw err;
                     return;
@@ -55,6 +63,7 @@ app.delete("/api/notes/:id", (req, res) => {
             }
         }
     })
+    //I just put this here to have some response
     res.end();
 })
 
