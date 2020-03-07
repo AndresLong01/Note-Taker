@@ -38,25 +38,26 @@ app.post("/api/notes", (req, res) => {
         return res.json(req.body);
     })
 })
-//Hopefully deleting stuff :c
-// app.delete("/api/notes/:id", (req, res) => {
-//     let deletion = req.params.id;
-//     notes = notes.filter((el , i)=> el.id !== deletion);
-// })
-
-
+// Hopefully deleting stuff :c
 app.delete("/api/notes/:id", (req, res) => {
     let deletion = req.params.id;
-    for (let i = 0; i< notes.length; i++) {
-        if(deletion === notes[i].id){
-            notes.splice(deletion, 1);
-            fs.writeFile("./db/db.json", `[${notes}]`, "utf-8", (err) => {
-                if (err) throw err;
-                return res.json(req.body);
-            })
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
+        if (err) throw err;
+        let savedNotes = JSON.parse(data);
+        for (let i = 0; i< notes.length; i++) {
+            console.log(deletion, savedNotes[i].id, i)
+            if(deletion == savedNotes[i].id){
+                notes.splice(i, 1);
+                fs.writeFile("./db/db.json", `[${notes}]`, "utf-8", (err) => {
+                    if (err) throw err;
+                    return;
+                })
+            }
         }
-    }
+    })
+    res.end();
 })
+
 //Wildcard Identifier
 app.get("*", (req,data) => {
     data.sendFile(path.join(__dirname, "./public/index.html"));
